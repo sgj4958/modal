@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인 페이지</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            list-style: none;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 50px;
+        }
+
+        
+
+
+        #modalCustom {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #00000050;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+        #modalCustom [data-id="modalWrap"] {
+            width: 400px;
+            height: 250px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #modalCustom [data-id="header"] {
+            height: 30px;
+            padding: 5px 10px;
+            background: #ddd;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            flex-shrink: 0;
+            color: #555;
+        }
+        #modalCustom [data-id="header"] [data-id="labelArea"] {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        #modalCustom [data-id="body"] {
+            padding: 10px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #modalCustom [data-id="footer"] {
+            height: 50px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        #modalCustom button {
+            background: none;
+            border: 0;
+            cursor: pointer;
+        }
+        #modalCustom [data-id="footer"] button {
+            padding: 5px 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        #modalCustom [data-id="footer"] button[data-id="o"] {
+            background: #3fab3f;
+            color: #fff;
+        }
+        #modalCustom [data-id="footer"] button[data-id="x"] {
+            background: #fff;
+            color: #333;
+            border-color: #ccc;
+        }
+    </style>
+</head>
+<body id="body">
+    <div>B O D Y</div>
+</body>
+<script>
+    const modal = (content, option) => {
+
+        const optionDefault = {
+            headerLabel: "",
+            oLabel: "확인",
+            xLabel: "취소",
+            oEvent: () => {}
+        }
+        option = {
+            ...optionDefault,
+            ...option
+        }
+
+        const id = `customId_No${Math.floor(Math.random() * 10e5)}`
+        document.head.insertAdjacentHTML("beforeend", `<style>
+        </style>`)
+        document.body.insertAdjacentHTML("afterbegin", `
+        <div id="modalCustom">
+            <div data-id="modalWrap">
+                <div data-id="header">
+                    <div data-id="labelArea">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
+                            <path d="M666-440 440-666l226-226 226 226-226 226Zm-546-80v-320h320v320H120Zm400 400v-320h320v320H520Zm-400 0v-320h320v320H120Zm80-480h160v-160H200v160Zm467 48 113-113-113-113-113 113 113 113Zm-67 352h160v-160H600v160Zm-400 0h160v-160H200v160Zm160-400Zm194-65ZM360-360Zm240 0Z"/>
+                        </svg>
+                        <p>${option.headerLabel}</p>
+                    </div>
+                    <div data-id="buttonArea">
+                        <button type="button" data-role="close">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#333">
+                                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div data-id="body">${content}</div>
+                <div data-id="footer">
+                    <button type="button" data-id="x" data-role="close">${option.xLabel}</button>
+                    <button type="button" data-id="o">${option.oLabel}</button>
+                </div>
+            </div>
+        </div>
+        `)
+
+        // const customWrap = document.querySelector(`#${insertElementId}`)
+        const customWrap = document.querySelector("body")
+        // const modalCustom = customWrap.querySelector(`#${id}`)
+        const modalCustom = customWrap.querySelector(`#modalCustom`)
+        const close = () => modalCustom.remove()
+        modalCustom.querySelectorAll(`[data-role="close"]`).forEach(element => element.addEventListener("click", close))
+        modalCustom.querySelector(`[data-id="o"]`).addEventListener("click", () => {
+            option.oEvent()
+            close()
+        })
+
+    }
+
+
+    modal(`<div>M / O / D / A / L</div>`, {
+        headerLabel: "MODAL"
+    })
+</script>
+</html>
