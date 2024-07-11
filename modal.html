@@ -43,7 +43,17 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            transition: translate .3s ease-out;
+            position: absolute;
+        }
+        #modalCustom [data-id="modalWrap"].fade {
+            translate: 0 -100vh;
+        }
+        #modalCustom [data-id="modalWrap"].grab {
+            cursor: grabbing;
+        }
+        #modalCustom [data-id="modalWrap"].grab.tansparent {
+            opacity: .7;
         }
         #modalCustom [data-id="header"] {
             height: 30px;
@@ -100,7 +110,7 @@
     </style>
 </head>
 <body id="body">
-    <div>B O D Y</div>
+    <button type="button" id="showModal" style="padding: 10px 20px; background: green; color: #fff; border-radius: 10px;">SHOW MODAL</button>
 </body>
 <script>
     const modal = (content, option) => {
@@ -109,6 +119,12 @@
             headerLabel: "",
             oLabel: "확인",
             xLabel: "취소",
+            showOButton: true,
+            showXButton: true,
+            showHeader: true,
+            backDropCloseEnable: true,
+            tansparentEnable: true,
+            insideDragEnable: true,
             oEvent: () => {}
         }
         option = {
@@ -121,7 +137,8 @@
         </style>`)
         document.body.insertAdjacentHTML("afterbegin", `
         <div id="modalCustom">
-            <div data-id="modalWrap">
+            <div data-id="modalWrap" class="fade">
+                ${option.showHeader ? `
                 <div data-id="header">
                     <div data-id="labelArea">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 -960 960 960" fill="#555">
@@ -137,10 +154,11 @@
                         </button>
                     </div>
                 </div>
+                ` : ""}
                 <div data-id="body">${content}</div>
                 <div data-id="footer">
-                    <button type="button" data-id="x" data-role="close">${option.xLabel}</button>
-                    <button type="button" data-id="o">${option.oLabel}</button>
+                    ${option.showOButton ? `<button type="button" data-id="x" data-role="close">${option.xLabel}</button>` : ""}
+                    ${option.showXButton ? `<button type="button" data-id="o">${option.oLabel}</button>` : ""}
                 </div>
             </div>
         </div>
@@ -150,18 +168,71 @@
         const customWrap = document.querySelector("body")
         // const modalCustom = customWrap.querySelector(`#${id}`)
         const modalCustom = customWrap.querySelector(`#modalCustom`)
-        const close = () => modalCustom.remove()
+        const modalWrap = modalCustom.querySelector(`[data-id="modalWrap"]`)
+        const header = modalWrap.querySelector(`[data-id="header"]`)
+        
+        setTimeout(() => modalWrap.classList.remove("fade"))
+        const close = () => {
+            modalWrap.classList.add("fade")
+            setTimeout(() => modalCustom.remove(), 100)
+        }
+        if(option.backDropCloseEnable)
+        modalCustom.addEventListener("click", event => event.target == modalCustom && close())
         modalCustom.querySelectorAll(`[data-role="close"]`).forEach(element => element.addEventListener("click", close))
         modalCustom.querySelector(`[data-id="o"]`).addEventListener("click", () => {
             option.oEvent()
             close()
         })
 
+        const getNowLeft = () => parseInt(getComputedStyle(modalWrap).left)
+        const getNowTop = () => parseInt(getComputedStyle(modalWrap).top)
+        // const setLeft = left => modalWrap.style.left = left + "px"
+        // const setTop = top => modalWrap.style.top = top + "px"
+        const getMaxLeft = () => modalCustom.getBoundingClientRect().width
+        const getMaxTop = () => modalCustom.getBoundingClientRect().height
+        const setXY = (x, y) => {
+            // const left = getNowLeft()
+            // const top = getNowTop()
+            const maxLeft = getMaxLeft()
+            const maxTop = getMaxTop()
+            const setX = () => modalWrap.style.left = x + "px"
+            const setY = () => modalWrap.style.top = y + "px"
+            if(option.insideDragEnable) {
+                x > 0 && maxLeft > x + modalWrap.getBoundingClientRect().width && setX()
+                y > 0 && maxTop > y + modalWrap.getBoundingClientRect().height && setY()
+            } else {
+                setX()
+                setY()
+            }
+        }
+
+        modalWrap.style.left = getComputedStyle(modalWrap).left
+        modalWrap.style.top = getComputedStyle(modalWrap).top
+        header.addEventListener("mousedown", e => {
+            e.preventDefault()
+            const nowLeft = getNowLeft()
+            const nowTop = getNowTop()
+            // const nowLeft = parseInt(getComputedStyle(modalWrap).left)
+            // const nowTop = parseInt(getComputedStyle(modalWrap).top)
+            modalWrap.classList.add("grab")
+            option.tansparentEnable && modalWrap.classList.add("tansparent")
+
+            const mouseMoveEvent = event => setXY(nowLeft - (e.x - event.x), nowTop - (e.y - event.y))
+            document.addEventListener("mousemove", mouseMoveEvent);
+
+            document.addEventListener("mouseup", event => {
+                modalWrap.classList.remove("grab")
+                modalWrap.classList.remove("tansparent")
+                document.removeEventListener("mousemove", mouseMoveEvent)
+            })
+        })
+
     }
 
 
+    document.querySelector("#showModal").addEventListener("click", () => 
     modal(`<div>M / O / D / A / L</div>`, {
-        headerLabel: "MODAL"
-    })
+        headerLabel: "MODAL",
+    }))
 </script>
 </html>
