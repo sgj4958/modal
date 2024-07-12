@@ -1,30 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>메인 페이지</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            list-style: none;
-        }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 50px;
-        }
-    </style>
-</head>
-<body id="body">
-    <button type="button" id="showModal" style="padding: 10px 20px; background: green; color: #fff; border-radius: 10px;">SHOW MODAL</button>
-</body>
-<script>
     const modal = (content, option) => {
 
         const optionDefault = {
@@ -136,7 +109,7 @@
         }
         </style>`)
         document.body.insertAdjacentHTML("afterbegin", `
-        <dialog id="modalCustom">
+        <dialog id="${id}">
             <div data-id="modalWrap" class="fade">
                 ${option.showHeader ? `
                 <div data-id="header">
@@ -224,12 +197,3 @@
         // ESC 이벤트
         document.addEventListener("keydown", event => event.keyCode == 27 && close())
     }
-
-
-    document.querySelector("#showModal").addEventListener("click", () => 
-    modal(`<div>M / O / D / A / L</div>`, {
-        headerLabel: "MODAL",
-        oEvent: () => console.log("OK")
-    }))
-</script>
-</html>
